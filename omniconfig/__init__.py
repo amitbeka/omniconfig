@@ -48,7 +48,7 @@ class ConfigMeta(type):
             return getattr(self, name)
 
         def get_callable(self, name, func):
-            """Return self.name if exists, or calls `func` and sets it before returnning"""
+            """Return self.name if exists, or calls `func` and sets it before returning"""
             return self.__dict__.setdefault(name, func())
 
         config_params = {}
@@ -132,6 +132,9 @@ class Config(object):
             setattr(self, '_' + name, value)
 
 
-def asbool(x):
+def str_bool(x):
     """Return boolean value of `x`, support for false-meaning strings (0, 'false' etc.)"""
-    return bool(x) and x not in {'0', 'False', 'false', 'None', 'none', 'null', 'nil'}
+    try:
+        return x.strip().lower() not in {'0', 'false', 'none', 'null', 'nil', ''}
+    except AttributeError: # probably not a string
+        return bool(x)
